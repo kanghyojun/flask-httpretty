@@ -52,7 +52,6 @@ def f_sendall(self, data, *args, **kw):
                    last_request=request)
     entry = flaskhttpretty.get_entry(method, info, request)
     if not entry:
-        print('here i am')
         self._entry = None
         self.real_sendall(data)
         return None
@@ -85,7 +84,7 @@ class flaskhttpretty(httpretty):
     @classmethod
     def enable(cls):
         fakesock.socket.sendall = f_sendall
-        super().enable()
+        httpretty.enable()
 
     @classmethod
     def flask_resp_to_entry(cls, resp, method, info, request):
