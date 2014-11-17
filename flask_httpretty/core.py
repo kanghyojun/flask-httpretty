@@ -39,7 +39,7 @@ def f_sendall(self, data, *args, **kw):
             httpretty.historify_request(headers, body, False)
             return
 
-# path might come with
+    # path might come with
     s = urlsplit(path)
     core.POTENTIAL_HTTP_PORTS.add(int(s.port or 80))
     headers, body = list(map(utf8, data.split(b'\r\n\r\n', 1)))
@@ -70,8 +70,9 @@ class flaskhttpretty(httpretty):
         entry = None
         with cls.flask_app.test_client() as c:
             f = getattr(c, method.lower())
-            print(request)
-            resp = f(info.path)
+            resp = f(info.path,
+                     data=request.body,
+                     content_type=request.headers.get('Content-Type', None))
         if resp.status_code == 404:
             return None
         return cls.flask_resp_to_entry(resp, method, info, request)
