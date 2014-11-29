@@ -70,7 +70,7 @@ class flaskhttpretty(httpretty):
         entry = None
         with cls.flask_app.test_client() as c:
             f = getattr(c, method.lower())
-            resp = f(info.path,
+            resp = f('{}?{}'.format(info.path, info.query),
                      data=request.body,
                      content_type=request.headers.get('Content-Type', None))
         if resp.status_code == 404:

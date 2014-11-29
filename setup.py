@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Flask-httpretty',
-    version='1.0',
+    version='1.1',
     url='http://github.com/admire93/flask-httpretty',
     license='BSD',
     author='Hyojun Kang',
