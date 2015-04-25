@@ -7,6 +7,7 @@ from httpretty.compat import ClassTypes, urlsplit
 from httpretty.http import parse_requestline
 from httpretty.utils import decode_utf8, utf8
 
+
 old_fakesocket_sendall = fakesock.socket.sendall
 
 
@@ -63,29 +64,49 @@ class flaskhttpretty(httpretty):
 
     flask_app = None
 
+    _apps = []
+
+    @classmethod
+    def check_response(cls, responses, method, info, request):
+        result_response = None
+        for response in responses:
+            if response.status_code != 404:
+                 result_response = response
+
+        return cls.flask_resp_to_entry(result_response, method, info, request)
+
+
     @classmethod
     def get_entry(cls, method, info, request):
-        if cls.flask_app is None:
+        if not cls._apps:
             return None
-        entry = None
-        with cls.flask_app.test_client() as c:
-            f = getattr(c, method.lower())
-            resp = f('{}?{}'.format(info.path, info.query),
-                     data=request.body,
-                     content_type=request.headers.get('Content-Type', None))
-        if resp.status_code == 404:
-            return None
-        return cls.flask_resp_to_entry(resp, method, info, request)
+        responses = []
+        for app in cls._apps:
+            with app.test_client() as c:
+                http_request = getattr(c, method.lower())
+                content_type = request.headers.get('Content-Type')
+                response = http_request('{}?{}'.format(info.path, info.query),
+                                        data=request.body,
+                                        content_type=content_type)
+                responses.append(response)
+
+        return cls.check_response(responses, method, info, request)
+
 
     @classmethod
     def register_app(cls, app, uri='http://localhost:9000'):
         cls.uri = uri
-        cls.flask_app = app
+        cls._apps.append(app)
 
     @classmethod
     def enable(cls):
         fakesock.socket.sendall = f_sendall
         httpretty.enable()
+
+    @classmethod
+    def reset(cls):
+        cls._apps = []
+        httpretty.reset()
 
     @classmethod
     def flask_resp_to_entry(cls, resp, method, info, request):
