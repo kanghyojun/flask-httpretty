@@ -1,14 +1,20 @@
 from setuptools import setup, find_packages
 
 
+def readme():
+    with open('./README.md') as f:
+        return f.read()
+
+
 setup(
     name='Flask-httpretty',
-    version='1.1',
+    version='1.2.0',
     url='http://github.com/admire93/flask-httpretty',
     license='BSD',
     author='Hyojun Kang',
     author_email='hyojun@admire.kr',
-    description='my description',
+    description='flask-httpretty help you to mock http requests via flask.',
+    long_description=readme(),
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
