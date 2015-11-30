@@ -6,9 +6,14 @@ def readme():
         return f.read()
 
 
+tests_require = [
+    'pytest',
+    'flake8',
+]
+
 setup(
     name='Flask-httpretty',
-    version='1.2.0',
+    version='1.3.0',
     url='http://github.com/admire93/flask-httpretty',
     license='BSD',
     author='Hyojun Kang',
@@ -22,6 +27,10 @@ setup(
     install_requires=[
         'Flask', 'httpretty',
     ],
+    extras_require={
+        'tests': tests_require,
+    },
+    tests_require=tests_require,
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
